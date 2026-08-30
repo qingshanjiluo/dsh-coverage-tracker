@@ -1,0 +1,29 @@
+{
+  "name": "dsh-coverage-tracker",
+  "version": "1.0.0",
+  "description": "DSH plugin for tracking code coverage and visualizing coverage heatmaps",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": ">=0.1.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh": "^0.1.0",
+    "tsdown": "^0.5.0",
+    "typescript": "^5.5.0"
+  }
+}
