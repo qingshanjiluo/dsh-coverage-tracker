@@ -1,66 +1,42 @@
 # dsh-coverage-tracker
 
-DSH plugin for tracking code coverage and visualizing coverage heatmaps.
-
-## Features
-
-- **Coverage Collection**: Run tests and collect coverage data with `coverage_run`
-- **Report Generation**: Generate detailed coverage reports in multiple formats (text, html, json, lcov)
-- **Heatmap Visualization**: Visualize coverage with color-coded heatmaps showing low/high coverage files
-- **Threshold Checking**: Automatically check if coverage meets your configured threshold
-- **History Tracking**: Track coverage trends over time with up to 100 historical snapshots
-- **Low Coverage Alerts**: Get notified when files fall below the coverage threshold
+`@qingshanjiluo/dsh-coverage-tracker` — DeepSeek Harness 主机工具插件：把 LCOV 覆盖率报告（`coverage/lcov.info` 的**文本内容**）解析、达标检查与热力图排序做成三个纯函数工具。不读文件、不起子进程、不联网——由模型或调用方把 lcov 文本作为参数传入，因此完全确定性、可离线测试。
 
 ## Installation
 
 ```bash
-# Via DSH CLI
-dsh install dsh-coverage-tracker
-
-# Or manually
-git clone https://github.com/qingshanjiluo/dsh-coverage-tracker.git
-cd dsh-coverage-tracker
-npm install
-npm run build
+npx -y @deepseek-ai/dsh plugin --profile web add @qingshanjiluo/dsh-coverage-tracker
 ```
 
 ## Tools
 
-| Tool | Description |
-|------|-------------|
-| `coverage_run` | Run tests and collect coverage data |
-| `coverage_report` | Generate coverage report |
-| `coverage_heatmap` | Display coverage heatmap |
-| `coverage_history` | View coverage history trends |
-| `coverage_check` | Check if coverage meets threshold |
+| Tool | 参数 | 返回 |
+|------|------|------|
+| `coverage_parse` | `lcovText` | 全局 `lines/branches/functions` 的 `found/hit` 计数与 `pct:{lines,branches}` 百分比（保留 1 位小数） |
+| `coverage_check` | `lcovText`, `minLines?` | `{pass, minLines, checked, below:[file,...]}`：逐文件行覆盖率与阈值比较，`below` 按路径排序 |
+| `coverage_heatmap` | `lcovText` | `{rows:[{file,found,hit,pct,level,bar}], total}`：按覆盖率从低到高排序的每文件热力行（`level` 为 `high/medium/low`） |
 
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `/coverage run` | Run tests and collect coverage |
-| `/coverage report` | Generate and view coverage report |
-| `/coverage heatmap` | View coverage heatmap |
-| `/coverage history` | View coverage history |
-| `/coverage check` | Check coverage against threshold |
+解析支持的 lcov 记录：`SF`、`DA`、`LF/LH`、`BRDA`、`BRF/BRH`、`FN`、`FNDA`、`FNF/FNH`、`end_of_record`；明细记录优先于汇总记录，同一 `SF` 路径的多个区段会合并。
 
 ## Configuration
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `enabled` | boolean | `true` | Enable/disable the plugin |
-| `threshold` | number | `80` | Coverage threshold percentage (0-100) |
-| `format` | enum | `html` | Report format: text, html, json, lcov |
-| `exclude` | string[] | `['node_modules', 'dist', '__tests__']` | Directories to exclude |
-| `historyFile` | string | `.coverage-history.json` | Path to store coverage history |
+| `defaultMinLines` | number | `80` | `coverage_check` 未显式传 `minLines` 时的每文件行覆盖率阈值（百分比） |
+| `highThreshold` | number | `80` | `coverage_heatmap` 判定 `high` 的行覆盖率下限 |
+| `lowThreshold` | number | `50` | 低于该值判定 `low`，否则 `medium` |
 
-## Usage
+## Development
 
-1. Run your tests with coverage enabled
-2. Use `/coverage report` to generate a report
-3. View the heatmap with `/coverage heatmap`
-4. Check if coverage meets threshold with `/coverage check`
-5. Track trends over time with `/coverage history`
+```bash
+npm install --no-audit --no-fund
+npm run typecheck   # tsc --noEmit
+npm run build       # tsc + tsdown -> lib/index.js / lib/index.d.ts
+npx vitest run      # 全部离线，无网络/子进程
+node scripts/load-smoke.mjs   # 加载构建产物并断言工具注册
+```
+
+所有工具都是纯字符串解析，测试喂固定的 lcov 文本即可复现，无需任何外部覆盖率服务器；真实使用时请先由你的测试框架（vitest/istanbul/jest --coverage 等）生成 `coverage/lcov.info`，再把其内容传给这些工具。
 
 ## License
 

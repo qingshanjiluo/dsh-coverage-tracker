@@ -1,29 +1,49 @@
 {
-  "name": "dsh-coverage-tracker",
-  "version": "1.0.0",
-  "description": "DSH plugin for tracking code coverage and visualizing coverage heatmaps",
-  "license": "MIT",
+  "name": "@qingshanjiluo/dsh-coverage-tracker",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: parse, check, and heatmap LCOV coverage reports as pure model tools.",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
-    "dist"
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
+    "cordis.patch.yml",
+    "README.md"
   ],
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
+    "build": "tsc -p tsconfig.json && tsdown",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/"
+    "test": "vitest run"
+  },
+  "keywords": ["deepseek-harness", "dsh-plugin", "cordis", "coverage", "lcov", "heatmap"],
+  "license": "MIT",
+  "engines": {
+    "node": "^22.19 || >=24"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh": ">=0.1.0"
-  },
-  "dependencies": {
-    "zod": "^3.23.0"
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh": "^0.1.0",
-    "tsdown": "^0.5.0",
-    "typescript": "^5.5.0"
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6",
+    "@deepseek-ai/schemastery": "^3.18.1",
+    "@types/node": "^22.10.0",
+    "tsdown": "^0.11.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
   }
 }

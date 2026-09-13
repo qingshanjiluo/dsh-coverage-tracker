@@ -1,5 +1,10 @@
-# cordis.patch.yml
-# Minimal loader configuration for DSH plugin
-loader:
-  entry: dist/index.js
-  format: esm
+# dsh-coverage-tracker bundle layer: inserts the host tool plugin into a
+# profile's layer stack. Install with:
+#   npx -y @deepseek-ai/dsh plugin --profile web add @qingshanjiluo/dsh-coverage-tracker
+- insert:
+    - id: coverage-tracker
+      name: '@qingshanjiluo/dsh-coverage-tracker'
+      config:
+        defaultMinLines: 80
+        highThreshold: 80
+        lowThreshold: 50
